@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TabMaker.Models
 {
+    /// <summary>
+    /// Buffer class that holds data samples from recorded audio for FFT.
+    /// </summary>
     class Buffer
     {
         private int     size;
@@ -15,6 +18,10 @@ namespace TabMaker.Models
         public int Size { get => size; }
         public float[] Data { get => data; }
 
+        /// <summary>
+        /// Create Buffer on specific size.
+        /// </summary>
+        /// <param name="SIZE"></param>
         public Buffer(int SIZE)
         {
             size = SIZE;
@@ -26,6 +33,9 @@ namespace TabMaker.Models
             }
         }
 
+        /// <summary>
+        /// Event raised when buffer is filled or windows overlaps.
+        /// </summary>
         public event EventHandler<BufferFilledEventArgs> BufferFilled;
         
         protected virtual void OnBufferFilled(BufferFilledEventArgs e)
@@ -35,6 +45,11 @@ namespace TabMaker.Models
             
         }
 
+        /// <summary>
+        /// Add sample to buffer.
+        /// </summary>
+        /// <param name="SAMPLE_VALUE"></param>
+       
         public void AddSample(float SAMPLE_VALUE)
         {
             Data[position] = SAMPLE_VALUE;
