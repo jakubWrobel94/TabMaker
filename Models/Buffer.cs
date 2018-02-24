@@ -12,11 +12,14 @@ namespace TabMaker.Models
     class Buffer
     {
         private int     size;
-        private float[] data        = null;
-        private int     position    = 0;
+        private float[] data           = null;
+        private int     position       = 0;
+        private int     overlapFactor  = 8; // buffer overlaps 
+        private int[]   overlapPositions = null;
 
         public int Size { get => size; }
         public float[] Data { get => data; }
+        public int OverlapFactor { get => overlapFactor; }
 
         /// <summary>
         /// Create Buffer on specific size.
@@ -30,6 +33,13 @@ namespace TabMaker.Models
             for(int i = 0; i < size; ++i)
             {
                 Data[i] = -1f;
+            }
+
+            overlapPositions = new int[overlapFactor - 1];
+
+            for(int i = 0; i < overlapPositions.Length; ++i)
+            {
+                overlapPositions[i] = size / overlapFactor * (i + 1);
             }
         }
 
@@ -55,11 +65,11 @@ namespace TabMaker.Models
             Data[position] = SAMPLE_VALUE;
             position++;
 
-            if( (position == size/2) && ( data.Last() != -1f ))
+            if(BufferOverlaps())
             {
                 var args = new BufferFilledEventArgs
                 {
-                    FilledIndex = size / 2
+                    Position = position
                 };
 
                 OnBufferFilled(args);
@@ -70,20 +80,31 @@ namespace TabMaker.Models
                 position = 0;
                 var args = new BufferFilledEventArgs
                 {
-                    FilledIndex = 0
+                    Position = 0
                 };
 
                 OnBufferFilled(args);
             }
         }
 
-        
+        private bool BufferOverlaps()
+        {
+            if (data.Last() != -1f)
+            {
+                foreach (var idx in overlapPositions)
+                {
+                    if (idx == position)
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 
     public class BufferFilledEventArgs : EventArgs
     {
-        private int filledIndex;
+        private int position;
 
-        public int FilledIndex { get => filledIndex; set => filledIndex = value; }
+        public int Position { get => position; set => position = value; }
     }
 }
