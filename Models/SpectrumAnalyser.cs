@@ -42,7 +42,7 @@ namespace TabMaker.Models
         private void OnBufferFilled(object sender, BufferFilledEventArgs e)
         {
             
-            CalculateFFT(e.FilledIndex);
+            CalculateFFT(e.Position);
             spectrogram.AddSpectrum(CalculateSpectrum());
 
         }
@@ -59,11 +59,15 @@ namespace TabMaker.Models
                 waveFormat = fileReader.WaveFormat;
             }
 
-            spectrogram = new Spectrogram(fftSize, waveFormat.SampleRate);
+            spectrogram = new Spectrogram(fftSize, waveFormat.SampleRate, buffer.OverlapFactor);
         }
 
         public void AnalyseFile()
         {
+            
+            if (System.IO.File.Exists(@"./txt/waveform.txt")) System.IO.File.Delete(@"./txt/waveform.txt");
+            var fileWriter = System.IO.File.AppendText(@"./txt/waveform.txt");
+
             using (var fileReader = new AudioFileReader(filePath))
             {
                 long bytesRecorded = fileReader.Length;
@@ -79,6 +83,7 @@ namespace TabMaker.Models
                     {
                         sample32 = BitConverter.ToSingle(fileReaderBuffer, i);
                         buffer.AddSample(sample32);
+                        fileWriter.WriteLine(sample32.ToString());
                     }
                 } while (bytesReaded != 0);
             }
@@ -110,14 +115,18 @@ namespace TabMaker.Models
         /// Calculates and returns spectrum from complex data stored in fftOutput.
         /// </summary>
         /// <returns></returns>
+       
         float[] CalculateSpectrum()
         {
             float[] spectrum = new float[fftSize];
             for(int i = 0; i < fftSize; ++i)
             {
                 spectrum[i] = (float)Math.Sqrt(fftOutput[i].X * fftOutput[i].X + fftOutput[i].Y * fftOutput[i].Y);
+                
             }
             return spectrum;
         }
+
+      
     }
 }
