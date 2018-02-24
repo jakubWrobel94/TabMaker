@@ -8,7 +8,12 @@
         Title="MainWindow" Height="350" Width="525">
     <StackPanel>
         <Button Name="RecordButton" Content="Record"  Click="RecordButton_Click"/>
-        <Button Content="Stop Recording" Click="Button_Click"></Button>  
+        <Button Content="Stop Recording" Click="Button_Click"></Button>
+        <Image x:Name="image" RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <ScaleTransform ScaleY="-1"/>
+            </Image.RenderTransform>
+        </Image>
     </StackPanel>
 
 </Window>

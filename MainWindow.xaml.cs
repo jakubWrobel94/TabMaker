@@ -31,22 +31,26 @@ namespace TabMaker
 
         private void RecordButton_Click(object sender, RoutedEventArgs e)
         {
-            testRecorder = new FileRecorder(@"./wav/test.wav", new WaveFormat(10000, 16, 1));
+            testRecorder = new FileRecorder(@"./wav/test.wav", new WaveFormat(20000, 16, 1));
             testRecorder.StartRecording();
-            
-            
+     
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(testRecorder != null) testRecorder.StopRecording();
-
-
+            if (testRecorder != null)
+            {
+                testRecorder.StopRecording();
+            }
             SpectrumAnalyser analyser = new SpectrumAnalyser(11);
-            analyser.OpenFile(@"./wav/test.wav");
-            analyser.AnalyseFile();
-            var spectrogram = analyser.Spectrogram;
+                analyser.OpenFile(@"./wav/test.wav");
+                analyser.AnalyseFile();
+                var spectrogram = analyser.Spectrogram;
+                var bitmap = spectrogram.DrawSpectogram();
+                this.image.Source = bitmap;
+                spectrogram.SaveToTxtFile(@"./txt/spectrogram.txt");
             
+                
         }
     }
 }
